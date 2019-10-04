@@ -1,0 +1,12 @@
+USE E2Mfg
+Select  ROW_NUMBER() OVER(ORDER BY Billing_Header.Invoice_Date ASC) AS Line#,
+Billing_Header.Company_Code AS ""Company"", Billing_Header.Invoice_Date AS ""Date"", Billing_Header.Entered_By AS ""Ent By"", Billing_Header.Invoice_Number AS ""Inv"",
+Billing_Header.Customer_Code AS ""Customer"", Billing_Detail.Part_Number AS ""Part"", 
+Billing_Detail.Part_Description AS ""Description"", Billing_Detail.Gross_Amount AS ""Gross Amount""
+From Billing_Header
+INNER JOIN Billing_Detail
+ON Billing_Header.Billing_Header_ID=Billing_Detail.Billing_Header_ID
+Where (Billing_Detail.Job_Number = ' ')
+AND Billing_Header.Invoice_Date >= dateadd(mm, datediff(mm, 0, getdate()) -1, 0)
+	AND Billing_Header.Invoice_Date < dateadd(mm,datediff(mm, 0, getdate()), 0)
+Order BY Billing_Header.Company_Code, Billing_Header.Invoice_Date
