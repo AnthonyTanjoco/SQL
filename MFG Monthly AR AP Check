@@ -1,0 +1,10 @@
+USE E2Mfg
+SELECT ROW_NUMBER() OVER(ORDER BY Invoice_Number ASC) AS Line#,
+Invoice_Number 'Inv #', Customer_Code 'Customer Code', Invoice_Date 'Inv Date', Billing_Header.Period_Number 'Period', 
+CONVERT(DECIMAL(10,2), Net_Amount) 'Net Amount' 
+FROM Billing_Header Inner Join Period_Number 
+ON Billing_Header.Period_Number = Period_Number.Period_Number 
+WHERE (CONVERT(date, Billing_Header.Invoice_Date) < CONVERT(date, Period_Number.Period_Begin_Date) 
+OR CONVERT(date, Billing_Header.Invoice_Date) > CONVERT(date, Period_Number.Period_End_Date)) 
+AND (((Billing_Header.Period_Number >= CONVERT(CHAR(6), DATEADD(MONTH,-1,GETDATE()), 112))) 
+AND ((Billing_Header.Period_Number <= CONVERT(CHAR(6), DATEADD(MONTH,12,GETDATE()), 112))))
