@@ -1,0 +1,8 @@
+USE E2Mfg
+Select Company_Code AS ""Company"", Part_Number AS ""Part"", Quantity_On_Hand AS ""Qty""
+From Part_Number
+Where (Company_Code = 'smimfg')
+  AND (Description LIKE '%Power%')
+  AND (Description LIKE '%Ball%')
+  AND (Description LIKE '%Valve%')
+  AND (Part_Number_Type = 'P')
