@@ -1,0 +1,14 @@
+USE E2Mfg
+Select ROW_NUMBER() OVER(ORDER BY Time_Ticket.Time_Ticket_ID ASC) AS Line#, Attendance_Header.Ticket_Date AS ""Date"",
+Time_Ticket.Company_Code AS ""Company"", Time_Ticket.Time_Ticket_ID AS ""TTID"",
+Attendance_Header.Employee_Code AS ""Code"", Attendance_Header.Employee_Name AS ""Name"",
+Time_Ticket.Job_Number AS ""Job"", Time_Ticket.Cycle_Time AS ""Time"",
+Time_Ticket.Labor_Cost AS ""Labor"", Time_Ticket.Burden_Cost AS ""Burden"",
+Time_Ticket.Part_Number AS ""Part"", Time_Ticket.Revision_Level AS ""Rev""
+From Time_Ticket
+INNER JOIN Attendance_Header
+ON Time_Ticket.Attendance_Header_ID = Attendance_Header.Attendance_Header_ID
+Where (Time_Ticket.Company_Code <> 'ABC')
+AND (Time_Ticket.Work_Center = 'INDIRECT')
+AND (Time_Ticket.Time_Start >= dateadd(mm, datediff(mm, 0, getdate()) -1, 0))
+AND (Time_Ticket.Time_Start < dateadd(mm,datediff(mm, 0, getdate()), 0))
