@@ -1,0 +1,13 @@
+USE E2Mfg
+Select ROW_NUMBER() OVER(ORDER BY Order_Detail.Due_Date ASC) AS Line#,
+Order_Header.Customer_Code AS ""Customer"", Order_Detail.Job_Number AS ""Job"", Order_Header.Customer_PO_Number AS ""PO"", 
+Order_Detail.Part_Number AS ""Part"", Order_Detail.Part_Description AS ""Description"", Order_Detail.Status, 
+Order_Header.Entered_By AS ""Emp"", Order_Detail.Work_Code AS ""WC"", Order_Detail.Product_Code AS ""PC"", 
+Order_Detail.Priority AS ""Pty"", Order_Detail.Quantity_Ordered AS ""Qty"", 
+Order_Header.Entered_Date AS ""Ent"", Order_Detail.Due_Date AS ""Due"", Order_Header.User_Date1 AS ""Approval"",
+Order_Detail.Notes
+From Order_Header
+INNER JOIN Order_Detail ON Order_Header.Order_Header_ID = Order_Detail.Order_Header_ID
+Where (Order_Detail.Company_Code = 'SMIMFG') AND (Order_Detail.Status <> 'Closed') 
+AND (Order_Header.Order_Type <> 'Internal') AND (Order_Header.Customer_Code IN 
+('AK Steel', 'PVS Steel', 'Rockport Rol', 'Veolia')) AND (Order_Header.User_Date1 IS NULL)
