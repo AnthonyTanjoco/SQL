@@ -1,0 +1,14 @@
+USE E2MFG
+Select ROW_NUMBER() OVER(ORDER BY Billing_Header.Invoice_Date ASC) AS Line#, Billing_Header.Company_Code AS ""Company"", Billing_Header.Invoice_Date AS ""Date"", Billing_Header.Entered_By AS ""Ent By"", Billing_Header.Invoice_Number AS ""Inv"",
+Billing_Detail.Job_Number AS ""Job"", Billing_Header.Customer_Code AS ""Customer"", Billing_Detail.Part_Number AS ""Part"", 
+Billing_Detail.Part_Description AS ""Description"", Order_Detail.Total_Job_Cost AS ""Cost"",
+Order_Detail.Amount_Billed_Total AS ""Billed"", Order_Detail.Total_Profit AS ""Profit"", Order_Detail.Profit_Percent AS ""Pct""
+From Billing_Header
+INNER JOIN Billing_Detail
+ON Billing_Header.Billing_Header_ID=Billing_Detail.Billing_Header_ID
+INNER JOIN Packing_List_Detail
+ON Billing_Detail.Packing_List_Detail_ID=Packing_List_Detail.Packing_List_Detail_ID
+INNER JOIN Order_Detail
+ON Packing_List_Detail.Order_Detail_ID=Order_Detail.Order_Detail_ID
+Where Billing_Header.Invoice_Date >= dateadd(d,datediff(d,0,getdate()),-1)
+     AND Billing_Header.Invoice_Date < dateadd(d,datediff(d,0,getdate()),0)
