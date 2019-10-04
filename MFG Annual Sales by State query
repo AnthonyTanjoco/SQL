@@ -1,0 +1,21 @@
+USE E2Mfg
+Select ROW_NUMBER() OVER(ORDER BY Billing_Header.Invoice_Number ASC) AS Line#,
+Billing_Header.Invoice_Number 'Inv', Billing_Header.Period_Number 'Period',
+CONVERT(VARCHAR(10), Billing_Header.Invoice_Date, 101) 'Inv Date',
+CASE WHEN Billing_Header.Paid = 1 THEN 'Yes' ELSE 'No' END AS Paid,
+Billing_Header.Customer_Code 'Customer', Billing_Header.Terms_Code 'Terms',
+CONVERT(DECIMAL(10,2), Billing_Header.Gross_Amount) 'Gross',
+CONVERT(DECIMAL(10,2), Billing_Header.Discount_Amount) 'Discount',
+CONVERT(DECIMAL(10,2), Billing_Header.Tax_Amount) 'Tax',
+CONVERT(DECIMAL(10,2), Billing_Header.Freight_Amount) 'Freight',
+CONVERT(DECIMAL(10,2), Billing_Header.Miscellaneous_Charge_Amount) 'Misc',
+CONVERT(DECIMAL(10,2), Billing_Header.Net_Amount) 'Net',
+CONVERT(DECIMAL(10,2), Billing_Header.Amount_Paid_So_Far) 'Paid So Far',
+CONVERT(DECIMAL(10,2), Billing_Header.Balance_Due) 'Balance Due',
+Address.State_Code 'State'
+From Billing_Header
+INNER JOIN Address
+ON bILLING_Header.Billing_Header_ID = Address.Billing_Header_ID
+Where billing_header.Company_Code = 'SMIMFG'
+AND Address.Address_Type = 'SHIPPING'
+AND (YEAR(Billing_Header.Invoice_Date) = YEAR(DATEADD(YEAR,-1,GETDATE())))
