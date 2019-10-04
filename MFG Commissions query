@@ -1,0 +1,29 @@
+USE E2MFG
+Select  ROW_NUMBER() OVER(ORDER BY Billing_Header.Invoice_Number ASC) AS Line#,
+Billing_Header.Invoice_Number 'Inv', CONVERT(VARCHAR(10), Billing_Header.Invoice_Date, 101) 'Date',
+CASE WHEN Billing_Header.Paid = 1 THEN 'Yes' ELSE 'No' END AS Paid,
+Billing_Detail.Job_Number 'Job', Billing_Header.Customer_Code 'Customer', 
+Billing_Detail.Part_Number 'Part', 
+Billing_Detail.Part_Description 'Description', 
+CONVERT(DECIMAL(10,2), Order_Detail.Total_Material_Cost) 'Mat',
+CONVERT(DECIMAL(10,2), Order_Detail.Total_Labor_Cost) 'Labor',
+CONVERT(DECIMAL(10,2), Order_Detail.Total_Burden_Cost) 'Burden', 
+CONVERT(DECIMAL(10,2), Order_Detail.Total_Job_Cost) 'Cost', 
+CONVERT(DECIMAL(10,0), Billing_Detail.Quantity_Shipped) 'Qty',
+CONVERT(DECIMAL(10,2), Order_Detail.Amount_Billed_Total) 'Billed', 
+CONVERT(DECIMAL(10,2), Order_Detail.Total_Profit) 'Profit', 
+CONVERT(DECIMAL(10,2), Order_Detail.Profit_Percent) 'Pct',
+CASE WHEN Order_Detail.Profit_Percent >= 20 THEN CONVERT(DECIMAL(10,2), Order_Detail.Amount_Billed_Total * .03) ELSE '0' END AS Gross,
+CASE WHEN Order_Detail.Profit_Percent Between .01 and 19.99 THEN CONVERT(DECIMAL(10,2), Order_Detail.Total_Profit * .10) ELSE 0 END 'Net'
+From Billing_Header
+INNER JOIN Billing_Detail
+ON Billing_Header.Billing_Header_ID=Billing_Detail.Billing_Header_ID
+INNER JOIN Packing_List_Detail
+ON Billing_Detail.Packing_List_Detail_ID=Packing_List_Detail.Packing_List_Detail_ID
+INNER JOIN Order_Detail
+ON Packing_List_Detail.Order_Detail_ID=Order_Detail.Order_Detail_ID
+INNER JOIN Commission_Distribution
+ON Order_Detail.Order_Detail_ID=Commission_Distribution.Order_Detail_ID
+Where (Billing_Header.Company_Code = 'SMIMFG')
+  AND (Billing_Header.Period_Number = CONVERT(CHAR(6), DATEADD(MONTH,-2,GETDATE()), 112))
+  AND (Commission_Distribution.Salesman_Code = 'JMH')
