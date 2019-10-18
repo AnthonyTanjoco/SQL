@@ -1,0 +1,19 @@
+USE E2Mfg
+Select ROW_NUMBER() OVER(ORDER BY PN.Part_Number ASC) AS Line#,
+PN.Part_Number AS 'Part', PN.Revision_Level as 'Rev', PN.Description,
+PN.Part_Number_Type AS 'Type', PN.Product_Code AS 'PC', PN.GL_Account_Inventory AS 'Inv GL',
+PN.GL_Account_Purchasing AS 'PO GL', PN.Quantity_On_Hand AS 'Stock', PN.Stocking_Cost AS 'Cost',
+CONVERT(varchar(10),PN.Entered_Date, 101) AS 'Ent', CONVERT(VARCHAR(10), OM.DATE_POSTED, 101) AS 'Posted',
+PNW.Material_Location_Code_Default AS 'Location'
+From Part_Number AS PN
+LEFT JOIN Order_Material AS OM
+ON PN.Part_Number_ID = OM.Part_Number_ID
+     AND OM.Order_Material_ID = 
+	 (
+	     SELECT MAX(Order_Material_ID)
+		 FROM Order_Material OL
+		 WHERE OL.Part_Number_ID = OM.Part_Number_ID
+	)
+LEFT JOIN Part_Number_Warehouse PNW
+ON PN.Part_Number_ID = PNW.Part_Number_ID
+Where (PN.Company_Code = 'TSMFG')
